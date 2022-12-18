@@ -395,6 +395,8 @@ MonoBehaviour:
   towerHeight: 5
   upBaseReduction: 0.7
   maxTowerLevels: 0
+  heightReducMin: 0.3
+  heightReducMax: 0.7
   minCanonHeigth: 0
   maxCanonHeigth: 0
 --- !u!4 &307074960
