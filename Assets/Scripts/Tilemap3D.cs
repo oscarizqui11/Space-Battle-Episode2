@@ -12,6 +12,17 @@ public class Tilemap3D : MonoBehaviour
     public float tileWidth;
     public float tileLength;
 
+    [Header("Tower Params")]
+    public float towerHeight;
+    public float upBaseReduction;
+    public int maxTowerLevels;
+    public float heightReducMin;
+    public float heightReducMax;
+
+    [Header("Canon Params")]
+    public float minCanonHeigth;
+    public float maxCanonHeigth;
+
     private Tile3D[,] tilemap;
     private int indexTileWidth;
     private int indexTileLength;
@@ -38,7 +49,7 @@ public class Tilemap3D : MonoBehaviour
 
     private void DrawTile(Tile3D tile)
     {
-        tile.Draw(transform.position.x + tileWidth * indexTileWidth, transform.position.y, transform.position.z + tileLength * indexTileLength, material);
+        tile.Draw(material);
 
         if(indexTileWidth + 1 < numTileWidth)
         {
@@ -57,13 +68,17 @@ public class Tilemap3D : MonoBehaviour
 
     private void InitializeTilesRecursive()
     {
-        if(Random.Range(0, 1 + 1) == 0)    
+        Vector3 tilePos = new Vector3(transform.position.x + tileWidth * indexTileWidth, 
+                                      transform.position.y,
+                                      transform.position.z + tileLength * indexTileLength);
+
+        if(Random.Range(0, 2) == 0)    
         {
-            tilemap[indexTileWidth, indexTileLength] = new Ground(tileWidth, tileLength);
+            tilemap[indexTileWidth, indexTileLength] = new Ground(this, tilePos);
         }
         else
         {
-            tilemap[indexTileWidth, indexTileLength] = new Tower(tileWidth, tileLength);
+            tilemap[indexTileWidth, indexTileLength] = new Tower(this, tilePos, towerHeight, upBaseReduction);
         }
 
 
