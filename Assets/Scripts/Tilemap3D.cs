@@ -13,7 +13,8 @@ public class Tilemap3D : MonoBehaviour
     public float tileLength;
 
     [Header("Tower Params")]
-    public float towerHeight;
+    public float minTowerHeight;
+    public float maxTowerHeight;
     public float upBaseReduction;
     public int maxTowerLevels;
     public float heightReducMin;
@@ -78,7 +79,8 @@ public class Tilemap3D : MonoBehaviour
         }
         else
         {
-            tilemap[indexTileWidth, indexTileLength] = new Tower(this, tilePos, towerHeight, upBaseReduction);
+            //tilemap[indexTileWidth, indexTileLength] = new Tower(this, tilePos, Random.Range(minTowerHeigth, maxTowerHeigth), upBaseReduction);
+            tilemap[indexTileWidth, indexTileLength] = new Canon(this, tilePos, Random.Range(minCanonHeigth, maxCanonHeigth), upBaseReduction);
         }
 
 

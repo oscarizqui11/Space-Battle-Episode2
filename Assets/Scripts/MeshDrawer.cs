@@ -6,6 +6,41 @@ namespace MyEngine
 {
     public struct MeshDrawer
     {
+        private static void Normalize(Vector3[] vertices, Vector3[] normals)
+        {
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                normals[i] = vertices[i] = vertices[i].normalized;
+            }
+        }
+
+        private static void CreateUV(Vector3[] vertices, Vector2[] uv)
+        {
+            float previousX = 1.0f;
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                Vector3 v = vertices[i];
+                if(v.x == previousX)
+                {
+                    uv[i - 1].x = 1f;
+                }
+                previousX = v.x;
+                Vector2 textureCoordinates;
+                textureCoordinates.x = Mathf.Atan2(v.x, v.z) / (-2f * Mathf.PI);
+                if(textureCoordinates.x < 0f)
+                {
+                    textureCoordinates.x += 1f;
+                }
+                textureCoordinates.y = Mathf.Asin(v.y) / Mathf.PI + 0.5f;
+                uv[i] = textureCoordinates;
+            }
+
+            uv[vertices.Length - 4].x = uv[0].x = 0.125f;
+            uv[vertices.Length - 3].x = uv[1].x = 0.375f;
+            uv[vertices.Length - 2].x = uv[2].x = 0.625f;
+            uv[vertices.Length - 1].x = uv[3].x = 0.875f;
+        }
+
         public static Mesh Plane(float width, float length)
         {
             Mesh plane;
@@ -137,6 +172,64 @@ namespace MyEngine
             block.RecalculateBounds();
 
             return block;
+        }
+
+        public static Mesh Octahedron(int subdivisions, float radius)
+        {
+            Vector3[] vertexs =
+            {
+                Vector3.down,
+                Vector3.down,
+                Vector3.down,
+                Vector3.down,
+                Vector3.forward,
+                Vector3.left,
+                Vector3.back,
+                Vector3.right,
+                Vector3.forward,
+                Vector3.up,
+                Vector3.up,
+                Vector3.up,
+                Vector3.up,
+            };
+
+            int[] triangles =
+            {
+                0, 4, 5,
+                1, 5, 6,
+                2, 6, 7,
+                3, 7, 8,
+
+                9, 5, 4,
+               10, 6, 5,
+               11, 7, 6,
+               12, 8, 7
+            };
+
+            //Vector3[] normals = new Vector3[vertexs.Length];
+            //Normalize(vertexs, normals);
+
+            Vector2[] uv = new Vector2[vertexs.Length];
+            CreateUV(vertexs, uv);
+
+            if(radius != 1f)
+            {
+                for(int i = 0; i < vertexs.Length; i++)
+                {
+                    vertexs[i] *= radius;
+                }
+            }
+
+            Mesh mesh = new Mesh();
+            mesh.vertices = vertexs;
+            //mesh.normals = normals;
+            mesh.uv = uv;
+            mesh.triangles = triangles;
+
+            mesh.RecalculateNormals();
+            //mesh.RecalculateBounds();
+
+            return mesh;
         }
     }
 }

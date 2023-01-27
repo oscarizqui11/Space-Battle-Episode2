@@ -14,6 +14,7 @@ public class Tower : Tile3D
     int level;
 
     Tower[] nextLevel;
+    int[] nextLevelPositions;
 
     const float reduc = 0.3f;
 
@@ -25,40 +26,152 @@ public class Tower : Tile3D
 
         block = MeshDrawer.Trapezoid(tileMap.tileWidth, tileMap.tileLength, h, ubr);
 
-        int nextLevelTowers = Random.Range(0,4+1);
-        if(nextLevelTowers > 0)
-        {
-            nextLevel = new Tower[nextLevelTowers];
-
-            for(int i = 0; i < nextLevelTowers; i++)
-            {
-                //nextLevel[i] = new Tower(this, );
-            }
-        }
+        RandomizeNextLevel();
+        
     }
     public Tower(Tower baseTower, Vector3 position, float height) : base(baseTower.tileMap, position)
     {
-        h = height;
+        h = baseTower.h * height;
         ubr = baseTower.ubr;
         level = baseTower.level + 1;
+
+        float nextWidth = ApplyReduction(tileMap.tileWidth, level);
+        float nextLength = ApplyReduction(tileMap.tileLength, level);
+
+        block = MeshDrawer.Trapezoid(nextWidth, nextLength, h, ubr);
+
+
+        if(level < tileMap.maxTowerLevels)
+            RandomizeNextLevel();
     }
 
     public override void Draw(Material material)
     {
         Graphics.DrawMesh(block, position, Quaternion.identity, material, 0);
 
-        
+        if(nextLevel != null)
+        {
+            int i = 0;
+            while(i < nextLevel.Length)
+            {
+                nextLevel[i].Draw(material);
 
-        float nextWidth = reduc;
-        float nextLength = reduc;
-        float nextHeight = Random.Range(tileMap.heightReducMin, tileMap.heightReducMax);
-        Vector3 size = new Vector3(nextWidth, nextHeight, nextLength);
+                i++;
+            }
+        }
+    }
 
-        Vector3 nextPos = new Vector3(position.x - (tileMap.tileWidth * ubr / 2) + nextWidth * tileMap.tileWidth / 2,
-                                      position.y + h,
-                                      position.z - (tileMap.tileLength * ubr / 2) + nextWidth * tileMap.tileLength / 2);
+    private void RandomizeNextLevel()
+    {
+        int nextLevelTowers = Random.Range(0, 4 + 1);
+        if (nextLevelTowers > 0)
+        {
+            nextLevel = new Tower[nextLevelTowers];
+            nextLevelPositions = new int[nextLevelTowers];
 
-        Graphics.DrawMesh(block, Matrix4x4.TRS(nextPos, Quaternion.Euler(0.0f, 0.0f, 0.0f), size), material, 0);
+            /*for(int i = 0; i < nextLevelPositions.Length; i++)
+            {
+                RandomizeLevelPosition(i);
+            }
+
+            //int rnd = (int)(Random.value * 1000.0f);
+            //nextLevelPositions = Enumerable.Range(0, 4).OrderBy(x => rnd).Take(nextLevelTowers).ToArray();
+
+            Debug.Log("New Tower ---------");
+            for (int i = 0; i < nextLevelPositions.Length; i++)
+            {
+                Debug.Log("Tower " + i + ": " + nextLevelPositions[i]);
+            }*/
+
+
+            for (int i = 0; i < nextLevelTowers; i++)
+            {
+                //nextLevelPositions[i] = Random.Range(0, 4);
+
+                float nextWidth = ApplyReduction(tileMap.tileWidth, level + 1);
+                float nextLength = ApplyReduction(tileMap.tileLength, level + 1);
+                float actualWidth = ApplyReduction(tileMap.tileWidth, level);
+                float actualLength = ApplyReduction(tileMap.tileLength, level);
+                float nextHeight = Random.Range(tileMap.heightReducMin, tileMap.heightReducMax);
+
+                Vector3 nextPos = Vector3.zero;
+
+                if (i == 0)
+                {
+                    nextPos = new Vector3(position.x - (actualWidth * ubr / 2) + nextWidth / 2,
+                                                    position.y + h,
+                                                    position.z - (actualLength * ubr / 2) + nextLength / 2);
+                }
+                else if (i == 1)
+                {
+                    nextPos = new Vector3(position.x + (actualWidth * ubr / 2) - nextWidth / 2,
+                                                    position.y + h,
+                                                    position.z - (actualLength * ubr / 2) + nextLength / 2);
+                }
+                else if (i == 2)
+                {
+                    nextPos = new Vector3(position.x - (actualWidth * ubr / 2) + nextWidth / 2,
+                                                    position.y + h,
+                                                    position.z + (actualLength * ubr / 2) - nextLength / 2);
+                }
+                else if (i == 3)
+                {
+                    nextPos = new Vector3(position.x + (actualWidth * ubr / 2) - nextWidth / 2,
+                                                    position.y + h,
+                                                    position.z + (actualLength * ubr / 2) - nextLength / 2);
+                }
+                else
+                {
+                    Debug.Log("Next position of figure not set");
+                }
+
+                nextLevel[i] = new Tower(this, nextPos, nextHeight);
+            }
+        }
+    }
+
+    private float ApplyReduction(float initialSize, int levelsToReduc)
+    {
+        float retScale = initialSize * reduc;
+
+        if(levelsToReduc > 1)
+        {
+            retScale = ApplyReduction(retScale, levelsToReduc - 1);
+        }
+        else if(levelsToReduc <= 0)
+        {
+            retScale = initialSize;
+        }
+
+        return retScale;
+    }
+
+    private void RandomizeLevelPosition(int towerIndex) //DANGER!! STACK OVERFLOW!
+    {
+        int i = towerIndex;
+        bool contains = false;
+
+        int newPosition = Random.Range(0, 4);
+
+        while(i >= 0 && !contains)
+        { 
+            if (nextLevelPositions[i] == newPosition)
+            {
+                contains = true;
+                RandomizeLevelPosition(towerIndex); //DANGER!! STACK OVERFLOW!
+            }
+
+            i--;
+        }
+
+        if(i < 0 && !contains)
+        {
+            nextLevelPositions[towerIndex] = newPosition;
+        }
+        else
+        {
+            Debug.Log(i + ", " + contains);
+        }
     }
 
 }
