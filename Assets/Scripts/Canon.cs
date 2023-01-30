@@ -24,7 +24,8 @@ public class Canon : Tile3D
         blockBase = MeshDrawer.Trapezoid(tileMap.tileWidth, tileMap.tileLength, h, ubr);
         //sphere = MeshDrawer.Trapezoid(tileMap.tileWidth / 4, tileMap.tileLength / 4, h / 2, ubr);
 
-        sphere = MeshDrawer.Octahedron(0, 1.0f);
+        //sphere = MeshDrawer.Octahedron(0, 1.0f);
+        sphere = MeshDrawer.OctaSphere(tileMap.sphereSubdivisions, tileMap.sphereRadius);
     }
     
     public override void Draw(Material material)

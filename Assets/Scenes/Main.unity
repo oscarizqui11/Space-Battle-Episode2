@@ -398,6 +398,8 @@ MonoBehaviour:
   heightReducMax: 0.7
   minCanonHeigth: 6
   maxCanonHeigth: 8
+  sphereSubdivisions: 3
+  sphereRadius: 3
 --- !u!4 &307074960
 Transform:
   m_ObjectHideFlags: 0

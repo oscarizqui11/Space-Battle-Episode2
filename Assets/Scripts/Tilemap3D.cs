@@ -23,6 +23,9 @@ public class Tilemap3D : MonoBehaviour
     [Header("Canon Params")]
     public float minCanonHeigth;
     public float maxCanonHeigth;
+    [Range(1, 6)]
+    public int sphereSubdivisions;
+    public float sphereRadius;
 
     private Tile3D[,] tilemap;
     private int indexTileWidth;
@@ -73,13 +76,17 @@ public class Tilemap3D : MonoBehaviour
                                       transform.position.y,
                                       transform.position.z + tileLength * indexTileLength);
 
-        if(Random.Range(0, 2) == 0)    
+        int tileType = Random.Range(0, 3);
+        if (tileType == 0)    
         {
             tilemap[indexTileWidth, indexTileLength] = new Ground(this, tilePos);
         }
+        else if(tileType == 1)
+        {
+            tilemap[indexTileWidth, indexTileLength] = new Tower(this, tilePos, Random.Range(minTowerHeight, maxTowerHeight), upBaseReduction);    
+        }
         else
         {
-            //tilemap[indexTileWidth, indexTileLength] = new Tower(this, tilePos, Random.Range(minTowerHeigth, maxTowerHeigth), upBaseReduction);
             tilemap[indexTileWidth, indexTileLength] = new Canon(this, tilePos, Random.Range(minCanonHeigth, maxCanonHeigth), upBaseReduction);
         }
 
