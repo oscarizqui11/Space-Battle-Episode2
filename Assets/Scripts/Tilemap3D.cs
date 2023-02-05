@@ -12,6 +12,8 @@ public class Tilemap3D : MonoBehaviour
     public float tileWidth;
     public float tileLength;
 
+    public Transform player;
+
     [Header("Tower Params")]
     public float minTowerHeight;
     public float maxTowerHeight;
